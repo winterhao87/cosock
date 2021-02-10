@@ -5,24 +5,21 @@
 
 #define check_sock(L) (sock_t *)luaL_checkudata(L, 1, IO_SOCKET_METATABLE_NAME)
 
-static int lua_f_sock_close(lua_State *L)
-{
+static int lua_f_sock_close(lua_State *L) {
     sock_t *self = check_sock(L);
     sock_term(self);
     return 0;
 }
 
-static int lua_f_sock_fd(lua_State *L)
-{
+static int lua_f_sock_fd(lua_State *L) {
     sock_t *self = check_sock(L);
     lua_pushinteger(L, sock_fd(self));
     return 1;
 }
 
-static int lua_f_sock_set_nonblock(lua_State *L)
-{
+static int lua_f_sock_set_nonblock(lua_State *L) {
     sock_t *self = check_sock(L);
-    if(sock_set_nonblock(self) < 0){
+    if (sock_set_nonblock(self) < 0) {
         RETERR("sock_set_nonblock fail");
     }
 
@@ -30,12 +27,10 @@ static int lua_f_sock_set_nonblock(lua_State *L)
     return 1;
 }
 
-static int lua_f_sock_accept(lua_State *L)
-{
+static int lua_f_sock_accept(lua_State *L) {
     sock_t *self = check_sock(L);
-	sock_t cli;
-    if (sock_accept(self, &cli) < 0)
-        RETERR("sock_accept fail");
+    sock_t cli;
+    if (sock_accept(self, &cli) < 0) RETERR("sock_accept fail");
 
     sock_t *udata = lua_newuserdata(L, sizeof(sock_t));
     sock_lcopy(&cli, udata);
@@ -45,27 +40,26 @@ static int lua_f_sock_accept(lua_State *L)
     return 1;
 }
 
-static int lua_f_sock_write(lua_State *L)
-{
-    if(lua_gettop(L) < 2){
+static int lua_f_sock_write(lua_State *L) {
+    if (lua_gettop(L) < 2) {
         RETERR("invalid args");
     }
-    
+
     sock_t *self = check_sock(L);
     size_t len = 0;
     const char *data = luaL_checklstring(L, 2, &len);
 
-    if(sock_is_closed(self)){
+    if (sock_is_closed(self)) {
         RETERR("socket has closed");
     }
 
-    if(0 == len){
+    if (0 == len) {
         lua_pushinteger(L, 0);
         return 1;
     }
 
     int ret = sock_write(self, (void *)data, len);
-    if(ret < 0){
+    if (ret < 0) {
         RETERR("sock_send fail");
     }
 
@@ -73,14 +67,12 @@ static int lua_f_sock_write(lua_State *L)
     return 1;
 }
 
-static int lua_f_sock_read(lua_State *L)
-{
+static int lua_f_sock_read(lua_State *L) {
     // to be continue;
     return 0;
 }
 
-static int lua_f_sock_is_closed(lua_State *L)
-{
+static int lua_f_sock_is_closed(lua_State *L) {
     sock_t *self = check_sock(L);
     lua_pushboolean(L, sock_is_closed(self));
     return 1;
@@ -97,11 +89,10 @@ static const struct luaL_Reg lua_f_sock_func[] = {
     {NULL, NULL},
 };
 
-static int lua_f_sock_create(lua_State *L)
-{
-    const char *info = luaL_checkstring(L, 1);    
+static int lua_f_sock_create(lua_State *L) {
+    const char *info = luaL_checkstring(L, 1);
     sock_t *self = lua_newuserdata(L, sizeof(sock_t));
-    if(sock_init(self, info) < 0){
+    if (sock_init(self, info) < 0) {
         RETERR("sock_init fail");
     }
 
@@ -110,8 +101,7 @@ static int lua_f_sock_create(lua_State *L)
     return 1;
 }
 
-static int lua_f_sock_version(lua_State *L)
-{
+static int lua_f_sock_version(lua_State *L) {
     const char *ver = "Lua-Sock V0.0.1 by wenhaoye@126.com";
     lua_pushstring(L, ver);
     return 1;
@@ -123,8 +113,7 @@ static const struct luaL_Reg lua_f_sock_mod[] = {
     {NULL, NULL},
 };
 
-int luaopen_sock(lua_State *L)
-{
+int luaopen_sock(lua_State *L) {
     luaL_newmetatable(L, IO_SOCKET_METATABLE_NAME);
     LTABLE_ADD_CFUNC(L, -1, "__gc", lua_f_sock_close);
     lua_newtable(L);

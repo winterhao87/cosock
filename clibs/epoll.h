@@ -2,11 +2,10 @@
 #define CLIBS_EPOLL_H_
 
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
 
 #include <sys/epoll.h>
-
 
 typedef struct epoll_fd {
     int epfd;
@@ -28,4 +27,4 @@ struct epoll_event *epoll_events(epoll_fd_t *self);
 }
 #endif
 
-#endif // CLIBS_EPOLL_H_
+#endif  // CLIBS_EPOLL_H_

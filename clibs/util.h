@@ -1,9 +1,11 @@
 #ifndef CLIBS_UTIL_H_
 #define CLIBS_UTIL_H_
 
+#include <arpa/inet.h>
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <netinet/in.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -13,6 +15,7 @@
 #include <sys/stat.h>
 #include <sys/times.h>
 #include <sys/types.h>
+#include <sys/un.h>
 #include <unistd.h>
 
 #ifdef __cplusplus
@@ -89,17 +92,6 @@ extern "C" {
 int set_nonblock(int fd);
 int Read(int fd, void *data, size_t size);
 int Write(int fd, void *data, size_t len);
-
-int8_t is_ipv6(const char *ip);
-int tcp_server_create(const char *ip_str, uint16_t port, int backlog);
-int tcp_client_create(const char *ip_str, uint16_t port, int8_t *is_connected);
-int udp_server_create(const char *ip_str, uint16_t port);
-int udp_client_create(const char *ip_str, uint16_t port);
-int unix_tcp_server_create(const char *path, int backlog);
-int unix_tcp_client_create(const char *path);
-int unix_udp_client_create(const char *path);
-int unix_udp_server_create(const char *path);
-int Accept(int sock, struct sockaddr *cli_addr, socklen_t *addrlen, int flags);
 
 #ifdef __cplusplus
 }

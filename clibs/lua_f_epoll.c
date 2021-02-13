@@ -7,7 +7,7 @@
 
 static int lua_f_epoll_close(lua_State *L) {
     epoll_fd_t *self = (epoll_fd_t *)check_epoll_fd(L);
-    epoll_fd_release(self);
+    epoll_fd_close(self);
     return 0;
 }
 
@@ -85,17 +85,36 @@ static int lua_f_epoll_wait(lua_State *L) {
 
     int n = epoll_fd_wait(self, timeout);
     if (n < 0) {
-        RETERR("epoll_fd_wait fail");
+        lua_pushnil(L);
+        lua_pushnil(L);
+        lua_pushfstring(L, "%s: epoll_fd_wait fail", strerror(errno));
+        return 3;
     }
+    DBG("epoll_fd_wait timeout=%d, n=%d", timeout, n);
+
+    char key[32];
+    memset(key, 0, sizeof(key));
 
     lua_newtable(L);
     int i;
     for (i = 0; i < n; ++i) {
         lua_pushinteger(L, self->events[i].events);
-        lua_rawseti(L, -2, self->events[i].data.fd);
+        lua_rawseti(L, -2, i + 1);
     }
 
-    return 1;
+    lua_newtable(L);
+    for (i = 0; i < n; ++i) {
+        int x = snprintf(key, sizeof(key), "%u", self->events[i].data.fd);
+        key[x] = '\0';
+
+        // lua_pushlightuserdata(L, self->events[i].data.ptr);
+        lua_pushstring(L, key);
+        lua_rawseti(L, -2, i + 1);
+
+        DBG("setfield: %s", key);
+    }
+
+    return 2;
 }
 
 static const struct luaL_Reg lua_f_epoll_func[] = {

@@ -14,7 +14,7 @@ typedef struct epoll_fd {
 } epoll_fd_t;
 
 int epoll_fd_create(epoll_fd_t *self, size_t size);
-int epoll_fd_release(epoll_fd_t *self);
+void epoll_fd_close(epoll_fd_t *self);
 
 int epoll_fd_add(epoll_fd_t *self, int fd, int event, void *ptr);
 int epoll_fd_del(epoll_fd_t *self, int fd);

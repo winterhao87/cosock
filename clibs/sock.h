@@ -1,6 +1,10 @@
 #ifndef CLIBS_SOCK_H_
 #define CLIBS_SOCK_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -9,7 +13,6 @@
 #include <sys/uio.h>
 #include <sys/un.h>
 
-#include "sock.h"
 #include "util.h"
 
 #define SOCKET_TYPE_MASK 0xf0
@@ -37,6 +40,7 @@ typedef struct sock {
     int fd;
     int domain;
     sock_type_t type;
+    int8_t is_connected;
     union {
         struct netaddr net;
         char upath[108];
@@ -95,6 +99,17 @@ inline static void sock_destroy(sock_t **p_self) {
         safe_free(*p_self);
     }
 }
+
+int8_t is_ipv6(const char *ip);
+
+int tcp_server_create(const char *ip_str, uint16_t port, int backlog);
+int tcp_client_create(const char *ip_str, uint16_t port, int8_t *is_connected);
+int udp_server_create(const char *ip_str, uint16_t port);
+int udp_client_create(const char *ip_str, uint16_t port);
+int unix_tcp_server_create(const char *path, int backlog);
+int unix_tcp_client_create(const char *path);
+int unix_udp_client_create(const char *path);
+int unix_udp_server_create(const char *path);
 
 #ifdef __cplusplus
 }

@@ -26,7 +26,7 @@ int epoll_fd_create(epoll_fd_t *self, size_t size) {
     return 0;
 }
 
-void epoll_fd_release(epoll_fd_t *self) {
+void epoll_fd_close(epoll_fd_t *self) {
     assert(self);
     if (self && self->events) {
         free(self->events);
@@ -54,6 +54,7 @@ int epoll_fd_add(epoll_fd_t *self, int fd, int event, void *ptr) {
         return -1;
     }
 
+    DBG("epoll_ctl_add fd=%d, event=%d, ptr=%p", fd, event, ptr);
     return 0;
 }
 
@@ -70,6 +71,7 @@ int epoll_fd_mod(epoll_fd_t *self, int fd, int event, void *ptr) {
         return -1;
     }
 
+    DBG("epoll_ctl_mod fd=%d, event=%d", fd, event);
     return 0;
 }
 
@@ -79,6 +81,7 @@ int epoll_fd_del(epoll_fd_t *self, int fd) {
         return -1;
     }
 
+    DBG("epoll_ctl_del fd=%d", fd);
     return 0;
 }
 

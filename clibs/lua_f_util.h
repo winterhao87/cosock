@@ -46,7 +46,6 @@ static inline void stack_dump(lua_State *L) {
                 break;
 
             case LUA_TNUMBER:  // numbers
-                // printf("%g", lua_tonumber(L, i));
                 printf("%ld", lua_tointeger(L, i));
                 break;
             default:  // other values
